@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Mocha Tests</title>
+    <link rel="stylesheet" href="libs/mocha.css" />
+     <script src="libs/mocha.js"></script>
+    <script src="libs/chai.js"></script>
+    <script src="libs/sinon.js"></script>
+    <script src="libs/underscore.js"></script>
+    <script src="libs/aplus.js"></script>
+    <script src="../src/sizzle/dist/sizzle.js"></script>
+    <script src="libs/require.js"></script>
+  </head>
+  <body>
+    <div id="mocha"></div>
+     <script>
+      require.config({
+        baseUrl:"../src",
+         paths: {
+        "sizzle": "sizzle/dist/sizzle"
+    },
+      });
+      require(['jquery'],function($){
+        var adapter = {};
+        adapter.pending = function () {
+            var deferred = $.Deferred();
+            return {
+                promise: deferred,
+                fulfill: deferred.resolve,
+                reject: deferred.reject
+            };
+        };
+        
+        aplus(adapter);
+        mocha.run();
+      });
+    </script>
+  </body>
+</html>

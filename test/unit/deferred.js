@@ -243,6 +243,36 @@ test( "jQuery.Deferred.then - deferred (fail)", function() {
 	strictEqual( value3, 6, "result of filter ok" );
 });
 
+test( "jQuery.Deferred.then - deferred (error)", function() {
+
+	expect( 2 );
+
+	var value1, value2, value3,
+		defer = jQuery.Deferred(),
+		defer2 = defer.then(function( value ) {
+			throw value * 2;
+		});
+		piped = defer2.then( null, function( a) {
+			return jQuery.Deferred(function( defer ) {
+				defer.resolve( a * 2 );
+			});
+		});
+
+	piped.done(function( result ) {
+		value2 = result;
+	});
+
+	defer2.fail(function( result ) {
+		console.log( result );
+		value1 = result;
+	});
+
+	defer.resolve( 2 );
+
+	strictEqual( value1, 4, "first reject value ok" );
+	strictEqual( value2, 8, "second reject value ok" );
+});
+
 test( "jQuery.Deferred.then - deferred (progress)", function() {
 
 	expect( 3 );

@@ -25,27 +25,29 @@ jQuery.extend({
 				then: function( /* fnDone, fnFail, fnProgress */ ) {
 					var fns = arguments;
 					return jQuery.Deferred(function( newDefer ) {
-						jQuery.each( tuples, function( i, tuple ) {
-							var fn = jQuery.isFunction( fns[ i ] ) && fns[ i ];
-							// deferred[ done | fail | progress ] for forwarding actions to newDefer
-							deferred[ tuple[1] ](function() {
-								var returned;
-								try {
-									returned = fn && fn.apply( this, arguments );
-									if ( returned && jQuery.isFunction( returned.promise ) ) {
-										returned.promise()
-											.done( newDefer.resolve )
-											.fail( newDefer.reject )
-											.progress( newDefer.notify );
-									} else {
-										newDefer[ tuple[ 0 ] + "With" ]( this === promise ? newDefer.promise() : this, fn ? [ returned ] : arguments );
+						setTimeout(function(){
+							jQuery.each( tuples, function( i, tuple ) {
+								var fn = jQuery.isFunction( fns[ i ] ) && fns[ i ];
+								// deferred[ done | fail | progress ] for forwarding actions to newDefer
+								deferred[ tuple[1] ](function() {
+									var returned;
+									try {
+										returned = fn && fn.apply( this, arguments );
+										if ( returned && jQuery.isFunction( returned.promise ) ) {
+											returned.promise()
+												.done( newDefer.resolve )
+												.fail( newDefer.reject )
+												.progress( newDefer.notify );
+										} else {
+											newDefer[ tuple[ 0 ] + "With" ]( this === promise ? newDefer.promise() : this, fn ? [ returned ] : arguments );
+										}
+									} catch (e) {
+										newDefer.reject(e);
 									}
-								} catch (e) {
-									newDefer.reject(e);
-								}
+								});
 							});
+							fns = null;
 						});
-						fns = null;
 					}).promise();
 				},
 				// Get a promise for this deferred
